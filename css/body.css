@@ -1,0 +1,20 @@
+body {
+  padding: 0;
+  margin: 0;
+  color: #F0E6D2;
+  background-color: #091428;
+  font-family: 'DungGeunMo', 'Malgun Gothic', sans-serif;
+  cursor: url('../svg/pointer.svg'), auto;
+  background: url('../image/main.webp') no-repeat center center fixed;
+  background-size: cover;
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+@font-face {
+  font-family: 'DungGeunMo';
+  src: url('../fonts/DungGeunMo.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

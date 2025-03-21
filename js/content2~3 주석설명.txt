@@ -1,0 +1,168 @@
+// =====================
+// 🌟 공통 슬라이드 초기화 함수
+// =====================
+function initSlider({
+  triggerElement,       // 💡 클릭 트리거 요소 (예: .r_box, .wave_wrap)
+  containerElement,     // 💡 슬라이드 전체를 감싸는 요소 (예: .slider_container)
+  tabButtons,           // 💡 각 탭 버튼 요소들 배열 (예: .s_tab_btn[])
+  tabInner,             // 💡 탭 버튼들이 들어있는 내부 컨테이너 (예: .s_tab_inner)
+  tabWrap,              // 💡 탭 외부 래퍼 (스크롤되는 부분) (예: .s_t_wrap)
+  slides,               // 💡 슬라이드 요소들 배열 (예: .slide_item[])
+  confettiEffect = null // 🎇 클릭 시 실행할 confetti 함수 (선택사항)
+}) {
+  const defaultIndex = 3; // 기본 시작 인덱스 설정 (데이터 인덱스 3번부터)
+
+  // 페이지 로드 시 슬라이드 초기화
+  window.addEventListener('DOMContentLoaded', () => {
+    setActiveTab(defaultIndex);
+    centerTab(defaultIndex);
+    showSlide(defaultIndex);
+  });
+
+  // 트리거 요소 클릭 시 슬라이드 열기 + confetti 효과 실행
+  triggerElement.addEventListener('click', () => {
+    if (confettiEffect) confettiEffect();  // 🎇 효과 실행 (있을 경우만)
+    triggerElement.style.display = 'none'; // 클릭 후 트리거 숨기기
+    containerElement.classList.remove('hidden');
+    containerElement.classList.add('show');
+    setActiveTab(defaultIndex);
+    centerTab(defaultIndex);
+    showSlide(defaultIndex);
+  });
+
+  // 각 탭 버튼 클릭 시 해당 슬라이드로 이동
+  tabButtons.forEach((btn) => {
+    const data_index = parseInt(btn.dataset.index);
+    if (data_index < 3) return; // 더미 버튼 제외
+    btn.addEventListener('click', () => {
+      setActiveTab(data_index);
+      centerTab(data_index);
+      showSlide(data_index);
+    });
+  });
+
+  // 활성화된 탭 표시
+  function setActiveTab(index) {
+    tabButtons.forEach(b => b.classList.remove('active')); // 모든 버튼 비활성화
+    const target = [...tabButtons].find(btn => parseInt(btn.dataset.index) === index);
+    if (target) target.classList.add('active'); // 클릭된 버튼만 활성화
+  }
+
+  // 슬라이드 보여주기
+  function showSlide(data_index) {
+    const slide_idx = data_index - 3; // 슬라이드 배열은 0부터 시작, 데이터 인덱스는 3부터
+    slides.forEach((item, idx) => {
+      item.style.display = idx === slide_idx ? 'flex' : 'none'; // 해당 슬라이드만 표시
+    });
+  }
+
+  // 클릭한 탭을 가운데로 이동시키기
+  function centerTab(index) {
+    const btn = [...tabButtons].find(b => parseInt(b.dataset.index) === index);
+    if (!btn) return;
+    const btn_center = btn.offsetLeft + btn.offsetWidth / 2;
+    const wrap_center = tabWrap.offsetWidth / 2;
+    let moveX = btn_center - wrap_center;
+    const maxScroll = tabInner.scrollWidth - tabWrap.offsetWidth;
+    moveX = Math.max(0, Math.min(moveX, maxScroll)); // 최대 이동 제한
+    tabInner.style.transform = `translateX(-${moveX}px)`; // 이동 적용
+  }
+}
+
+// =====================
+// 🎇 Confetti 기본 설정
+// =====================
+const defaults = {
+  spread: 360,          // 퍼지는 각도
+  ticks: 50,            // 입자 생존 시간
+  gravity: 0,           // 중력 영향 없음
+  decay: 0.94,          // 점차 느려짐
+  startVelocity: 30,    // 시작 속도
+  colors: ['FFE400', 'FFBD00', 'E89400', 'FFCA6C', 'FDFFB8'] // 컬러 팔레트
+};
+
+// =====================
+// 🌟 별 모양 confetti (더 멀리 퍼지는 효과)
+// =====================
+function shootStars() {
+  confetti({
+    ...defaults,
+    particleCount: 40,      // 입자 수
+    scalar: 1.2,            // 크기 비율
+    shapes: ['star'],       // 별 모양 입자
+    spread: 720,            // 💥 확 퍼짐 (기존 360 → 720)
+    decay: 0.88,            // 💫 더 오래 남음
+    startVelocity: 40       // 🚀 더 멀리 날림
+  });
+
+  confetti({
+    ...defaults,
+    particleCount: 10,
+    scalar: 0.75,
+    shapes: ['circle'],     // 원형 입자
+    spread: 720,
+    startVelocity: 40
+  });
+}
+
+// =====================
+// ☔ 비처럼 흩날리는 confetti (좌우 양쪽에서 퍼짐)
+// =====================
+function startConfettiRain(durationSec = 5) {
+  const duration = durationSec * 1000;              // 밀리초 변환
+  const animationEnd = Date.now() + duration;
+
+  function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  const interval = setInterval(() => {
+    const timeLeft = animationEnd - Date.now();
+    if (timeLeft <= 0) {
+      clearInterval(interval); // 시간 종료 시 멈춤
+      return;
+    }
+    const particleCount = 50 * (timeLeft / duration); // 점점 줄어드는 입자 수
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+    });
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+    });
+  }, 250);
+}
+
+// =====================
+// ✅ 컨텐츠 2 슬라이더 초기화 (.r_box 클릭 → 슬라이드 열기 + 비 효과)
+// =====================
+initSlider({
+  triggerElement: document.querySelector('.r_box'),                   // 박스 클릭 요소
+  containerElement: document.querySelector('.slider_container'),     // 슬라이드 전체
+  tabButtons: document.querySelectorAll('.s_tab_btn'),                // 탭 버튼들
+  tabInner: document.querySelector('.s_tab_inner'),                   // 탭 내부
+  tabWrap: document.querySelector('.s_t_wrap'),                       // 탭 외부 래퍼
+  slides: document.querySelectorAll('.slide_item'),                   // 슬라이드들
+  confettiEffect: () => startConfettiRain(5)                          // 비 효과
+});
+
+// =====================
+// ✅ 컨텐츠 3 슬라이더 초기화 (.wave_wrap 클릭 → 슬라이드 열기 + 별 효과)
+// =====================
+initSlider({
+  triggerElement: document.querySelector('.wave_wrap'),
+  containerElement: document.querySelector('.up_container'),
+  tabButtons: document.querySelectorAll('.up_tab_btn'),
+  tabInner: document.querySelector('.up_tab_inner'),
+  tabWrap: document.querySelector('.up_t_wrap'),
+  slides: document.querySelectorAll('.up_item'),
+  confettiEffect: () => {
+    // 별 효과 3연발!
+    setTimeout(shootStars, 0);
+    setTimeout(shootStars, 100);
+    setTimeout(shootStars, 200);
+  }
+});

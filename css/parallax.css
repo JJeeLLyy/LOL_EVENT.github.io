@@ -1,0 +1,62 @@
+.parallax {
+  position: relative;
+  background: none;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: visible;
+  padding: 0;
+  width: 100vw;
+}
+
+.hello {
+  padding: clamp(5px, 1vw, 10px) clamp(1px, 3vw, 20px);
+  border-width: clamp(1px, 0.5vw, 4px);
+  border-style: solid;
+  border-color: #C8AA6E;
+  background-color: #091428;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.8s ease;
+  width: clamp(80px, 60vw, 800px);
+  margin: 0 auto;
+}
+
+.hello.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.main_h {
+  font-weight: 500;
+  margin: clamp(10px, 5vw, 60px) 0;
+  font-size: clamp(3px, 3vw, 30px);
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sub_h {
+  font-size: clamp(1px, 2vw, 20px);
+  margin-bottom: clamp(3px, 3vw, 30px);
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sub_h_txt1 {
+  margin-bottom: clamp(8px, 3vw, 30px);
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.main_h, .sub_h, .sub_h_txt1 {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
